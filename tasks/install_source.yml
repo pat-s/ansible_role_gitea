@@ -196,7 +196,16 @@
         path: "{{ gitea_install_source_build_dir }}{{ gitea_install_source_binary_name }}"
         state: absent
 
-    - name: Clean up build directory
+    # without this, reruns on UI-related files that changed do not propogate
+    - name: Cleanup generated assets
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ gitea_install_source_build_dir }}public/assets/js"
+        - "{{ gitea_install_source_build_dir }}public/assets/css"
+
+    - name: Remove build directory
       ansible.builtin.file:
         path: "{{ gitea_install_source_build_dir }}"
         state: absent
